@@ -1,0 +1,40 @@
+<!-- ===== Header ===== -->
+<header class="header">
+<button id="backBtn" class="back-fixed" onclick="goBack()">🡠</button>
+    <div class="logo">
+
+        <a href="/">
+        <!-- Desktop logo -->
+        <img class="destop" src="/images/logo2.png" alt="NotesHub Logo">
+
+        <!-- Mobile logo -->
+        <img class="mobile" src="/images/mobile_logo2.png" alt="NotesHub logo">
+        </a>
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <!-- Future -->
+        <!-- <a href="/login">Login</a>
+        <a href="/register">Register</a> -->
+    </nav>
+</header>
+
+<script>
+(function () {
+    const backBtn = document.getElementById("backBtn");
+
+    // Hide on Home / Landing page
+    if (
+        window.location.pathname === "/" ||
+        window.location.pathname === "/home"
+    ) {
+        backBtn.style.display = "none";
+    }
+
+    window.goBack = function () {
+        window.history.back();
+    };
+})();
+</script>
+

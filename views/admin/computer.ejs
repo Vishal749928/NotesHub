@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+<div class="content">
+
+    <!-- ADD SUBJECT (UNCHANGED DESIGN) -->
+    <h1>Add New Subject</h1>
+
+    <form class="subject-form" action="/admin/add-subject" method="POST" enctype="multipart/form-data">
+
+        <label>Subject Name</label>
+        <input type="text" name="subject_name" required>
+
+        <label>Subtitle</label>
+        <input type="text" name="subtitle" placeholder="Imp Notes">
+
+        <label>Semester</label>
+        <input type="number" name="semester" required min="1" max="8">
+
+        <label>Price (₹)</label>
+        <input type="number" name="price" required min="0" max="9999">
+
+        <label>Upload PDF</label>
+        <input type="file" name="pdf" accept="application/pdf" required>
+
+        <button type="submit">Add Subject</button>
+
+    </form>
+
+  
+    <% subjects.forEach(sub => { %>
+        <section class="categories">
+        <div class="note-card">
+
+    <h3 class="subject"><%= sub.subject_name %></h3>
+    <p class="subtitle"><%= sub.subtitle %></p>
+
+    <div class="price-row">
+        <span class="price">₹<%= sub.price %></span>
+        <span class="tag">PDF</span>
+    </div>
+
+    <a href="/edit/<%= sub.id %>" class="btn-buy">Edit</a>
+    
+</div>
+</section>
+<% }) %>
+   
+
+</div>
+
+</body>
+</html>

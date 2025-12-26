@@ -1,0 +1,221 @@
+/* =====================
+   GLOBAL
+===================== */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body{
+    background: #f1f5f9;
+}
+
+/* =====================
+   DASHBOARD PAGE
+===================== */
+.dashboard{
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.dashboard h1{
+    font-size: 32px;
+    color: #1e293b;
+    margin-bottom: 6px;
+}
+
+.dashboard .subtitle{
+    color: #64748b;
+    margin-bottom: 30px;
+}
+
+/* Dashboard cards */
+.card-container{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+    max-width: 900px;
+    margin: auto;
+}
+
+.card{
+    text-decoration: none;
+    padding: 30px 20px;
+    border-radius: 16px;
+    color: white;
+    transition: 0.3s;
+}
+
+.card h2{
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.card p{
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* Colors */
+.computer{
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+}
+
+.mechanical{
+    background: linear-gradient(135deg, #16a34a, #166534);
+}
+
+.add{
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+}
+
+.card:hover{
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+/* =====================
+   ADD SUBJECT PAGE
+===================== */
+.content{
+    width: 100%;
+    align-items: center;
+    margin: auto;
+    padding: 30px 20px;
+}
+
+.content h1{
+    margin-bottom: 20px;
+    color: #1e293b;
+    
+}
+
+/* Add subject form */
+.subject-form{
+    background: white;
+    padding: 22px;
+    border-radius: 14px;
+    max-width: 420px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.subject-form label{
+    display: block;
+    margin-top: 14px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.subject-form input{
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+}
+
+.subject-form button{
+    margin-top: 18px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.subject-form button:hover{
+    background: linear-gradient(135deg, #1e40af, #1d4ed8);
+}
+
+/* =====================
+   SUBJECT CARDS
+===================== */
+.categories{
+ 
+    margin: 20px;
+    display: grid;
+    width: 300px;
+    float: left;
+}
+
+/* Single subject card */
+.note-card{
+    background: white;
+    padding: 18px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.note-card:hover{
+    transform: translateY(-6px);
+    box-shadow: 0 16px 35px rgba(0,0,0,0.15);
+}
+
+.subject{
+    font-size: 17px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.subtitle{
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 14px;
+}
+
+.price-row{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.price{
+    font-size: 18px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+.tag{
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.btn-buy{
+    display: block;
+    text-align: center;
+    padding: 12px;
+    background: #2563eb;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.btn-buy:hover{
+    background: #144abf;
+}
+
+/* =====================
+   RESPONSIVE
+===================== */
+@media (max-width: 600px){
+    .subject-form{
+        max-width: 100%;
+    }
+
+    .dashboard h1{
+        font-size: 26px;
+    }
+}

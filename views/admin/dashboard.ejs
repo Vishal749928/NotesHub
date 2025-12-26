@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <h1>Admin Dashboard</h1>
+    <p class="subtitle">Manage Notes Category</p>
+
+    <div class="card-container">
+
+        <!-- Computer Notes -->
+        <a href="/admin/computer" class="card computer">
+            <h2>💻 Computer Notes</h2>
+            <p>Manage CN, OS, DBMS, AI</p>
+        </a>
+
+        <!-- Mechanical Notes -->
+        <a href="/admin/subjects?dept=mechanical" class="card mechanical">
+            <h2>⚙️ Mechanical Notes</h2>
+            <p>Manage Thermodynamics, SOM</p>
+        </a>
+
+        <!-- You can add more later -->
+        <a href="/admin" class="card add">
+            <h2>➕ Add New Subject</h2>
+            <p>Upload new notes</p>
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

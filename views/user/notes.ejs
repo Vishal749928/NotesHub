@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notes Selling Website</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<%-include('navbar')%>
+<!-- ===== Hero Section ===== -->
+<section class="hero">
+    <h1>Engineering Notes & Important Materials</h1>
+    <p>Get semester-wise notes at affordable prices</p>
+    <a href="#notes" class="view_notes">View Notes</a>
+</section>
+
+
+
+<!-- ===== Categories ===== -->
+<section class="categories" id="notes">
+  <div class="notes-heading">
+    <h2>Available For <b>Engineer's </b> (Notes) </h2>
+    <marquee>📘 Made by Backbenchers, Trusted by Toppers | 🚀 Study Less. Score More | ⏱️ Last-Minute Exam Savior...😎</marquee>
+  </div>
+  <% sub.forEach(function(subjects){ %>
+    <div class="note-card">
+      <div class=""
+  onclick="openBuyModal(this)"
+  data-id="<%= subjects.id %>"
+  data-subject="<%= subjects.subject_name %>"
+  data-price="<%= subjects.price %>">
+    <div class="image">
+        <img src="/images/pdf logo.png" alt="Note Image">
+
+        <!-- View PDF -->
+        <a href="/preview/<%= subjects.id %>" class="view_button">
+          View Pdf
+        </a>
+      </div>
+      <h3 class="subject"><%= subjects.subject_name %></h3>
+      
+      <div class="price-row">
+        <p class="subtitle">
+          <%= subjects.subtitle %>
+          Lorem ipsum dolor sit amet consectetur.
+        </p>
+        <span class="tag">PDF</span>
+      </div>
+      
+      <!-- <a href="/buy/<%= subjects.id %>" class="btn-buy">
+        Download ₹<%= subjects.price %>/-
+      </a> -->
+      
+  <a class="btn-buy">
+  Download ₹<%= subjects.price %>
+</a>
+</div>
+
+
+  </div>
+<% }) %>
+
+
+</section>
+
+<!-- ===== BUY MODAL (COMMON) ===== -->
+<div id="buyModal" class="modal-overlay">
+  <div class="modal-box">
+
+    <div class="safe-label">✔ 100% Safe</div>
+
+    <h2>📘 Buy Notes</h2>
+
+    <div class="modal-summary">
+      <p><b>Subject:</b> <span id="mSubject"></span></p>
+      <p><b>Format:</b> PDF</p>
+      <p class="price">₹ <span id="mPrice"></span></p>
+    </div>
+
+    <input type="text" id="buyerName" placeholder="Your Name">
+    <input type="tel" id="buyerMobile" placeholder="Mobile Number">
+
+    <button class="pay-btn" id="payBtn">
+      Pay ₹<span id="payAmount"></span> via UPI
+    </button>
+
+    <button class="close-btn" onclick="closeBuyModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+let selectedSubject = {};
+function openBuyModal(btn) {
+
+  selectedSubject = {
+    id: btn.dataset.id,
+    subject: btn.dataset.subject,
+    price: btn.dataset.price
+  };
+
+  document.getElementById("mSubject").innerText = selectedSubject.subject;
+  document.getElementById("mPrice").innerText = selectedSubject.price;
+  document.getElementById("payAmount").innerText = selectedSubject.price;
+
+  document.getElementById("buyModal").style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
+
+function closeBuyModal() {
+  document.getElementById("buyModal").style.display = "none";
+  document.body.style.overflow = "auto";
+}
+</script>
+
+
+<!-- payment   -->
+ <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+document.getElementById("payBtn").onclick = async () => {
+
+  const name = buyerName.value.trim();
+  const mobile = buyerMobile.value.trim();
+
+  if (!name || !mobile) {
+    alert("Enter name & mobile");
+    return;
+  }
+
+  // Create order
+  const res = await fetch("/payment/create-order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      amount: selectedSubject.price
+    })
+  });
+
+  const data = await res.json();
+
+  const options = {
+    key: data.key,
+    order_id: data.orderId,
+    amount: data.amount,
+    name: "NotesHub",
+    description: selectedSubject.subject,
+    prefill: { name, contact: mobile },
+
+    handler: async function (response) {
+
+      const verify = await fetch("/payment/verify-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...response,
+          buyerName: name,
+          buyerMobile: mobile,
+          subject: selectedSubject.subject,
+          amount: selectedSubject.price,
+          sub_id: selectedSubject.id
+        })
+      });
+
+      const result = await verify.json();
+
+      if (result.success) {
+    window.location.href =
+      `/download/secure-download?token=${result.token}`;
+    } else {
+        alert("Payment Failed ❌");
+      }
+    }
+  };
+
+  new Razorpay(options).open();
+};
+</script>
+
+
+
+<!-- ===== Footer ===== -->
+<footer class="footer">
+    <p>© 2025 NotesHub | Made for College Students</p>
+</footer>
+
+</body>
+</html>

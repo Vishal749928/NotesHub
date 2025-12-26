@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= subject %> - Preview</title>
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: linear-gradient(to bottom, #fff7ed, #fef3c7);
+            text-align: center;
+            color: #1e293b;
+        }
+
+        h2 {
+            margin-top: 30px;
+            font-size: 30px;
+            font-weight: 800;
+            color: #92400e;
+        }
+
+        p {
+            color: #475569;
+            margin-bottom: 20px;
+        }
+
+        #pdf-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            user-select: none;
+        }
+
+        .page-wrapper {
+            position: relative;
+            margin: 25px 0;
+            padding: 14px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        canvas {
+            display: block;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        .blur canvas {
+            filter: blur(7px);
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            border-radius: 14px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .overlay::before {
+            content: "🔒";
+            font-size: 34px;
+            margin-bottom: 8px;
+        }
+
+        .buy-btn {
+            margin: 40px auto;
+            padding: 14px 36px;
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 30px;
+            box-shadow: 0 12px 30px rgba(249,115,22,0.4);
+            display: inline-block;
+        }
+
+        .buy-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Disable printing */
+        @media print {
+            body {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<%- include('navbar') %>
+
+<h2>📄 <%= subject %> – Preview</h2>
+<p>First 2 pages free · Remaining pages locked</p>
+
+<div id="pdf-container"></div>
+
+<script>
+const pdfUrl = "/preview-pdf/<%= sub_id %>";
+const maxPages = 5;
+
+pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
+
+    for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
+
+        pdf.getPage(pageNum).then(page => {
+
+            const scale = window.innerWidth < 768 ? 1 : 1.3;
+            const viewport = page.getViewport({ scale });
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "page-wrapper";
+            if (pageNum > 2) wrapper.classList.add("blur");
+
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            canvas.style.width = "100%";
+            canvas.style.height = "auto";
+
+            wrapper.appendChild(canvas);
+
+            if (pageNum > 2) {
+                const overlay = document.createElement("div");
+                overlay.className = "overlay";
+                overlay.innerText = "Buy to unlock full PDF";
+                wrapper.appendChild(overlay);
+            }
+
+            document.getElementById("pdf-container").appendChild(wrapper);
+            page.render({ canvasContext: ctx, viewport });
+        });
+    }
+});
+</script>
+
+<!-- ================= PROTECTION ================= -->
+
+<script>
+// Disable right click
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+// Disable drag
+document.addEventListener("dragstart", e => e.preventDefault());
+
+// Disable key shortcuts
+document.addEventListener("keydown", e => {
+    if (
+        (e.ctrlKey && ['s','p','u','c'].includes(e.key.toLowerCase())) ||
+        (e.ctrlKey && e.shiftKey && ['i','j'].includes(e.key.toLowerCase())) ||
+        e.key === "F12"
+    ) {
+        e.preventDefault();
+        alert("Action disabled. Please purchase to unlock.");
+    }
+});
+
+// Disable mobile long press
+document.addEventListener("touchstart", e => {
+    if (e.target.tagName === "CANVAS") e.preventDefault();
+}, { passive: false });
+
+// DevTools detection
+setInterval(() => {
+    const start = performance.now();
+    debugger;
+    if (performance.now() - start > 100) {
+        document.body.innerHTML =
+            "<h2 style='margin-top:60px;color:red'>DevTools detected ❌</h2>";
+    }
+}, 1000);
+</script>
+
+
+<!-- ===== Sticky Buy Button ===== -->
+<div class="sticky-buy-bar" style="position: sticky; bottom: 0; padding: 10px; text-align: center; ">
+   <div class="buy-btn"
+  onclick="openBuyModal(this)"
+  data-id="<%= sub_id %>"
+  data-subject="<%= subject %>"
+  data-price="<%= price %>">
+  Download Full PDF ₹<%= price %>
+</div>
+</div>
+
+
+
+<!-- ===== BUY MODAL (COMMON) ===== -->
+<div id="buyModal" class="modal-overlay">
+  <div class="modal-box">
+
+    <div class="safe-label">✔ 100% Safe</div>
+
+    <h2>📘 Buy Notes</h2>
+
+    <div class="modal-summary">
+      <p><b>Subject:</b> <span id="mSubject"></span></p>
+      <p><b>Format:</b> PDF</p>
+      <p class="price">₹ <span id="mPrice"></span></p>
+    </div>
+
+    <input type="text" id="buyerName" placeholder="Your Name">
+    <input type="tel" id="buyerMobile" placeholder="Mobile Number">
+
+    <button class="pay-btn" id="payBtn">
+      Pay ₹<span id="payAmount"></span> via UPI
+    </button>
+
+    <button class="close-btn" onclick="closeBuyModal()">Cancel</button>
+  </div>
+</div>
+
+
+<script>
+let selectedSubject = {};
+function openBuyModal(btn) {
+
+  selectedSubject = {
+    id: btn.dataset.id,
+    subject: btn.dataset.subject,
+    price: btn.dataset.price
+  };
+
+  document.getElementById("mSubject").innerText = selectedSubject.subject;
+  document.getElementById("mPrice").innerText = selectedSubject.price;
+  document.getElementById("payAmount").innerText = selectedSubject.price;
+
+  document.getElementById("buyModal").style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
+
+function closeBuyModal() {
+  document.getElementById("buyModal").style.display = "none";
+  document.body.style.overflow = "auto";
+}
+</script>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+document.getElementById("payBtn").onclick = async () => {
+
+  const name = buyerName.value.trim();
+  const mobile = buyerMobile.value.trim();
+
+  if (!name || !mobile) {
+    alert("Enter name & mobile");
+    return;
+  }
+
+  // Create order
+  const res = await fetch("/payment/create-order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      amount: selectedSubject.price
+    })
+  });
+
+  const data = await res.json();
+
+  const options = {
+    key: data.key,
+    order_id: data.orderId,
+    amount: data.amount,
+    name: "NotesHub",
+    description: selectedSubject.subject,
+    prefill: { name, contact: mobile },
+
+    handler: async function (response) {
+
+      const verify = await fetch("/payment/verify-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...response,
+          buyerName: name,
+          buyerMobile: mobile,
+          subject: selectedSubject.subject,
+          amount: selectedSubject.price,
+          sub_id: selectedSubject.id   // 🔥 THIS LINE WAS MISSING
+        })
+      });
+
+
+
+      const result = await verify.json();
+
+       if (result.success) {
+    window.location.href =
+      `/download/secure-download?token=${result.token}`;
+    } else {
+        alert("Payment Failed ❌");
+      }
+    }
+  };
+
+  new Razorpay(options).open();
+};
+</script>
+
+
+<footer class="footer">
+    <p>© 2025 NotesHub | Made for College Students</p>
+</footer>
+
+</body>
+</html>
